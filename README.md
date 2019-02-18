@@ -1,5 +1,5 @@
 # 2048-Game
 
-To run this type the below command:
+To run it:
 
    $ python3 2048
