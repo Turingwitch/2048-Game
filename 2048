@@ -1,0 +1,196 @@
+#!/usr/bin/python
+from tkinter import *
+import tkinter as tk
+from tkinter import messagebox
+import random
+import copy
+
+
+def square_box():               #dispaly the square game box
+       k=0
+       for i in range(n):
+             y = i * lngt
+             for j in range(n):
+                   x = j * lngt
+                   can.create_rectangle(x+1, y+1, x+lngt, y+lngt, fill="white")
+                   mylabel = can.create_text((x+1+50,y+1+50),text=l[k],font="Helvetica 20 bold")
+                   k=k+1
+
+              
+def left(l):     #left_sliding function
+       p=0       #variable that store the position of double merging  
+       for i in range (0,len(l)):     #check the whole list row wise
+              if(l[i]!=" "):          #if element is not a space
+                     j=i              
+                     while(j%4!=0 and j>p):  #move in left direction until it hit the leftmost wall and if there is no double merging position
+                           if(l[j-1]==" "):  #if the left square is empty then swap the elements
+                                 l[j],l[j-1]=l[j-1],l[j] 
+                           else:
+                                 if(l[j-1]==l[j]):    #if the values are same then merge the value 
+                                      l[j-1]=2*l[j]   #left square is merged with right sqaure
+                                      l[j]=" "        #make right square the empty square    
+                                      p=j             #store the value of merging position                                      
+                                      break           #after first merge break the loop
+                           j=j-1
+       return l
+
+def right(l):       #right_sliding function   
+       i=15         
+       p=15         #variable that store the position of double merging   
+       while(i>=0):   #check the whole list row wise in reverse order
+              if(l[i]!=" "):   #if element is not a space
+                     j=i                     
+                     while((j+1)%4!=0 and j<p):  #move in right direction until it hit the rightmost wall and if there is no double merging position
+                           if(l[j+1]==" "):      #if the right square is empty then swap the elements
+                                 l[j],l[j+1]=l[j+1],l[j] 
+                           else:
+                                 if(l[j+1]==l[j]):   #if the values are same then merge the value
+                                      l[j+1]=2*l[j]
+                                      l[j]=" "
+                                      p=j
+                                      break
+                           j=j+1
+              i=i-1
+       return l
+
+def up(l):      #up_sliding function   
+      for i in range (4,8):
+          j=i
+          p=0
+          while(j<=(i+8)):   #check the whole list column wise in order
+                if(l[j]!=" "):        #if element is not a space
+                     k=j
+                     while(4<=k<=15 and p<k ):   #move upwards until it hit the topmost wall and if there is no double merging position
+                           if(l[k-4]==" "):      
+                                 l[k],l[k-4]=l[k-4],l[k] 
+                           else:
+                                 if(l[k-4]==l[k]):   #if the values are same then merge the value
+                                      l[k-4]=2*l[k]
+                                      l[k]=" "
+                                      p=k                                      
+                                      break
+                           k=k-4
+                j=j+4
+      return l
+     
+            
+def down(l):    #down_sliding function  
+      i=11
+      while(i>=8):
+          p=12
+          j=i
+          while(j>=(i-8)):   #check the whole list coulmnwise in reverse order
+                if(l[j]!=" "):
+                     k=j
+                     while(0<=k<=11 and p>k ):  #move downwards until it hit the topmost wall and if there is no double merging position
+                           if(l[k+4]==" "):
+                                 l[k],l[k+4]=l[k+4],l[k] 
+                           else:
+                                 if(l[k+4]==l[k]):    #if the values are same then merge the value
+                                      l[k+4]=2*l[k]
+                                      l[k]=" " 
+                                      p=k
+                                      break
+                           k=k+4
+                j=j-4
+          i=i-1
+      return l
+
+def winner():     #winner_function 
+        r=0
+        for i in range(0,16):
+              if(l[i]==2048):  #if one of the square value is 2048 then user wins the game 
+                   square_box()
+                   messagebox.showinfo("Congratulation","Congrats!You are winner")
+                   r=1
+                   break
+        return r
+
+def loser():   #loser_function 
+        v=0
+        l_2=copy.deepcopy(l)  #if the square box is fully filled then it can perform any sliding operation
+        l_2=left(l_2)
+        if(l_2==l):
+               l_2=right(l_2)
+               if(l_2==l):
+                    l_2=up(l_2)
+                    if(l_2==l):
+                           l_2=down(l_2)
+                           if(l_2==l):
+                                   messagebox.showinfo("LOSER","oops!you lost the game")
+                                   v=v+1
+        
+        return v
+
+         
+                
+def move(p):
+         global l 
+         if(p==0):        #if left button is pressed
+             l=left(l)
+         if(p==1):        #if up button is pressed
+             l=up(l)
+         if(p==2):        #if right button is pressed
+             l=right(l)
+         if(p==3):        #if down button is pressed
+             l=down(l)                                         
+         r=winner()   #check the winning condition
+         if(r==1):     #if user wind then resuffle the square box
+             p=random.randint(1,2)*2
+             q=random.randint(1,2)*2
+             l=[p,q," "," "," "," "," "," "," "," "," "," "," "," "," "," "]          	
+             random.shuffle(l)
+             square_box()
+         else:
+             v=loser()             
+             if(v==1):  #if user lost the game then resuffle the square box
+                     p=random.randint(1,2)*2
+                     q=random.randint(1,2)*2
+                     l=[p,q," "," "," "," "," "," "," "," "," "," "," "," "," "," "]          	
+                     random.shuffle(l)
+                     square_box()
+             else:         
+                     p=random.randint(1,2)*2   #generate random number 2 or 4 after every sliding operation
+                     for i in range(0,16):
+                         q=random.randint(0,15)
+                         if(l[q]==" "):
+                               l[q]=p
+                               break           
+                     square_box()
+           
+            
+      
+
+p=random.randint(1,2)*2
+q=random.randint(1,2)*2
+l=[p,q," "," "," "," "," "," "," "," "," "," "," "," "," "," "]       #random list that contains initially two random numbers and spaces   	
+random.shuffle(l)		
+n = 4     
+lngt = 400 // n   #for 4 x 4 square box   
+
+window= tk.Tk()       #create the window
+window.geometry("400x530")     # To set dimensions of window
+window.tk.call('encoding', 'system', 'unicode')  #To make arrow sign
+frame = Frame(window)   #create a frame
+frame.pack()            #place the frame
+can = tk.Canvas(frame, width=400, height=400, bg="lightblue")   #create a canvas
+can.pack()            #place the canvas
+square_box()          #To create the slide puzzle square box
+
+bottomframe = Frame(window) #creating frames for buttons
+bottomframe.pack( ) 
+bottomframe1 = Frame(window) 
+bottomframe1.pack( )
+
+redbutton = Button(bottomframe, width=8, height=2,bd="5", bg="cyan",text =u"\u2190",font="5", fg ='black',relief=RAISED,command=lambda :move(0)) #left button
+redbutton.pack( side = LEFT) 
+bluebutton = Button(bottomframe, width=8, height=2,text =u"\u2191",font="5",bd="5", bg="cyan", fg ='black',relief=RAISED,command=lambda :move(1))   #up button
+bluebutton.pack( side = LEFT )
+greenbutton = Button(bottomframe,width=8, height=2, bd="5", bg="cyan",text = u"\u2192",font="5", fg='black',relief=RAISED,command=lambda :move(2))  #right button
+greenbutton.pack( side = LEFT ) 
+blackbutton = Button(bottomframe1, width=8, height=2,text =u"\u2193",font="5", bd="5", bg="cyan",fg ='black',relief=RAISED,command=lambda :move(3))   #down button
+blackbutton.pack()
+
+window.mainloop()
+
+
