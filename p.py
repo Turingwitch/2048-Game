@@ -1,2 +1,0 @@
-print("hryyyy")
-print("poo")
