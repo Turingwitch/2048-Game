@@ -1,1 +1,1 @@
-ghg
+print("Hello World")
